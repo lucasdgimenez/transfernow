@@ -2,12 +2,12 @@
   <div id="app">
     <h1>TransferNow</h1>
     <Form/>
-    <hr/>
   </div>
 </template>
 
 <script>
 import Form from "./components/Form"
+
 export default {
   name: 'App',
   components: {

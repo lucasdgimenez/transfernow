@@ -34,31 +34,22 @@
       <textarea type="text" placeholder="Descrição: " v-model="descricao"/>
       <button type="submit" class="btn">Enviar</button>
     </form>
-    {{categoria}}
-      <table id="t01" v-if="transfer.length > 0">
-        <tr>
-          <th>Nome</th>
-          <th>Valor</th> 
-          <th>Tipo</th>
-          <th>Categoria</th>
-          <th>Descrição</th>
-          <th>Hash</th>
-        </tr>
-        <tr v-for="(item, index) in transfer" :key="index">
-          <td>{{item.name}}</td>
-          <td>{{item.valor}}</td>
-          <td>{{item.tipo}}</td>
-          <td>{{item.categoria}}</td>
-          <td>{{item.descricao}}</td>
-          <td>{{item.hash}}</td>
-        </tr>
-    </table>
+    
+    <hr/>
+
+    <ListTransfer :lista="transfer" :delete="deleteTransfer"/>
+
   </section>
 </template>
 
 <script>
+import ListTransfer from "./ListTransfer"
+
 export default {
   name: "Form",
+  components: {
+    ListTransfer
+  },
   data() {
     return {
       name: '',
@@ -101,6 +92,16 @@ export default {
         alert("Transferencia efetuada com sucesso")
         this.limpaForm()
         console.log(this.transfer)
+    },
+    deleteTransfer(key) {
+      let yesNo = confirm("Excluir?")
+      if(yesNo) {
+        console.log("deletou" + key)
+        let filtro = this.transfer.filter((item) => {
+          return (item.hash !== key)
+        })
+        return this.transfer = filtro
+      }
     }
   },
   watch: {
@@ -158,25 +159,5 @@ form input {
   background: crimson;
 }
 
-table {
-  width:100%;
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-th, td {
-  padding: 15px;
-  text-align: left;
-}
-#t01 tr:nth-child(even) {
-  background-color: #eee;
-}
-#t01 tr:nth-child(odd) {
- background-color: #fff;
-}
-#t01 th {
-  background-color: black;
-  color: white;
-}
+
 </style>
