@@ -1,45 +1,119 @@
 <template>
-  <section id="form">
-    <form @submit.prevent="enviar">
-        <div class="input-group input-group-first">
-        <span :class="{sald: saldo, gre: green}">Saldo:<br/><hr/> R$ {{valorTotal}}</span>
-        <span class="entradas">Entradas:<br/><hr/> R$ {{valorDeposito}}</span>
-        <span class="saidas">Saidas:<br/><hr/> R$ {{valorPagamento}}</span>
-      </div>
-      <div class="input-group input-group-second">
-        <input type="text" placeholder="Nome" v-model="name"/>
-        <input type="text" placeholder="R$ " v-model.number="valor">
-      </div>
-      <div class="input-group input-group-third">
-        <label nameFor="deposito">
-          <input type="radio" name="deposito" value="deposito" v-model="tipo">
-          Deposito
-        </label>
-        <label nameFor="pagamento">
-          <input type="radio" name="pagamento" value="pagamento" v-model="tipo">
-          Pagamento
-        </label>
-      </div>      
-      <label v-if="tipo !== ''">Selecione a categoria</label>
-      <select v-if="tipo === 'deposito'" v-model="categoria" class="select">
-        <option v-for="(deposito, index) in dep" :key="index" class="option">
-          {{deposito}}
-        </option>
-      </select>
-      <select v-if="tipo === 'pagamento'" v-model="categoria" class="select">
-        <option v-for="(pagamento, index) in pag" :key="index" class="option">
-          {{pagamento}}
-        </option>
-      </select>
-      <textarea type="text" placeholder="Descrição: " v-model="descricao"/>
-      <button type="submit" class="btn">Enviar</button>
-    </form>
+  <v-container>
+    <v-form 
+      @submit.prevent="enviar"
+      class="d-flex flex-column justify-center ma-auto"
+    >
+      <v-row no-gutters>
+      <!--<v-row class="input-group input-group-first">
+      :class="{sald: saldo, gre: green}"
+      valorTotal > 0 ? sald : gre
+      <span :class="{sald: saldo, gre: green}">Saldo:<br/><hr/> R$ {{valorTotal}}</span>
+-->
+        <v-col>
+          <v-card 
+            :color="valorTotal > 0 ? '#009688' : '#F44'" 
+          >
+            <v-card-title class="headline">
+              Saldo: 
+            </v-card-title>
+            <v-card-subtitle p-10>
+              R$ {{valorTotal}}
+            </v-card-subtitle>
+          </v-card>
+        </v-col>   
+
+        <v-col>
+          <v-card color='#009688'>
+            <v-card-title class="headline">
+              Entradas: 
+            </v-card-title>
+            <v-card-subtitle p-10>
+              R$ {{valorDeposito}}
+            </v-card-subtitle>
+          </v-card>
+        </v-col>
+
+        <v-col>
+          <v-card color='#F44'>
+            <v-card-title class="headline">
+              Saidas: 
+            </v-card-title>
+            <v-card-subtitle p-10>
+              R$ {{valorPagamento}}
+            </v-card-subtitle>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-text-field
+        v-model="name"
+        :counter="10"
+        label="Nome"
+        required
+      >
+      </v-text-field>
+      <v-text-field
+        v-model.number="valor"
+        :counter="6"
+        label="R$"
+        required
+      >
+      </v-text-field>
+      
+      <v-row class="justify-center">
+        <v-checkbox
+          v-model="tipo"
+          label="Deposito"
+          color="success"
+          value="deposito"
+        >
+        </v-checkbox>
+        <v-checkbox
+          v-model="tipo"
+          label="Pagamento"
+          color="red"
+          value="pagamento"
+        >
+        </v-checkbox>
+      </v-row>
+
+      <label v-if="tipo === 'deposito' || tipo === 'pagamento'">Selecione a categoria</label>
+      <v-select 
+        v-if="tipo === 'deposito'"
+        v-model="categoria"
+        :items="dep"
+        class="select"
+        label="deposito"
+      >
+      </v-select>
+      <v-select 
+        v-if="tipo === 'pagamento'" 
+        v-model="categoria"
+        :items="pag"
+        class="select"
+        label="pagamento"
+      >
+      </v-select>
+
+      <v-textarea
+        name="input-7-1"
+        label="Descricao"
+        v-model="descricao"
+      ></v-textarea>
+
+       <v-btn
+        type="submit"
+        color="primary"
+      >
+        Enviar
+      </v-btn>
+    </v-form>
     
     <hr/>
 
     <ListTransfer :lista="transfer" :delete="deleteTransfer"/>
 
-  </section>
+  </v-container>
 </template>
 
 <script>
@@ -120,8 +194,7 @@ export default {
       } else {
         this.green = false; this.saldo = true;
       }
-    },
-
+    }
   },
   created() {
     const json = localStorage.getItem("myTransfer")
@@ -133,10 +206,6 @@ export default {
 
 <style scoped>
 form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 auto;
   max-width: 600px;
 }
 
@@ -161,14 +230,6 @@ form input {
 
 .input-group-first span {
   padding: 10px; color: #fff;
-}
-
-.entradas {
-  background: green;
-}
-
-.saidas {
-  background: red;
 }
 
 .input-group-second, .input-group-third {
