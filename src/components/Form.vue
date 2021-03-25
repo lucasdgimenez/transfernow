@@ -4,51 +4,50 @@
       @submit.prevent="enviar"
       class="d-flex flex-column justify-center ma-auto"
     >
-      <v-row no-gutters>
-      <!--<v-row class="input-group input-group-first">
-      :class="{sald: saldo, gre: green}"
-      valorTotal > 0 ? sald : gre
-      <span :class="{sald: saldo, gre: green}">Saldo:<br/><hr/> R$ {{valorTotal}}</span>
--->
+      <h1 class="text-center">Money control</h1>
+      <v-row no-gutters class="status">
         <v-col>
           <v-card 
-            :color="valorTotal > 0 ? '#009688' : '#F44'" 
+            :color="valorTotal >= 0 ? '#009688' : '#F44'"
+            class="white--text"
           >
             <v-card-title class="headline">
               Saldo: 
             </v-card-title>
-            <v-card-subtitle p-10>
+            <v-card-text class="white--text valor">
               R$ {{valorTotal}}
-            </v-card-subtitle>
+            </v-card-text>
           </v-card>
         </v-col>   
 
         <v-col>
-          <v-card color='#009688'>
+          <v-card color='#009688' class="white--text">
             <v-card-title class="headline">
               Entradas: 
             </v-card-title>
-            <v-card-subtitle p-10>
+            <v-card-text class="white--text valor">
               R$ {{valorDeposito}}
-            </v-card-subtitle>
+            </v-card-text>
           </v-card>
         </v-col>
 
         <v-col>
-          <v-card color='#F44'>
+          <v-card color='#F44' class="white--text">
             <v-card-title class="headline">
               Saidas: 
             </v-card-title>
-            <v-card-subtitle p-10>
+            <v-card-text class="white--text valor">
               R$ {{valorPagamento}}
-            </v-card-subtitle>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
+
       <v-text-field
-        v-model="name"
+        v-model="nome"
         :counter="10"
         label="Nome"
+        class="mt-4"
         required
       >
       </v-text-field>
@@ -77,7 +76,12 @@
         </v-checkbox>
       </v-row>
 
-      <label v-if="tipo === 'deposito' || tipo === 'pagamento'">Selecione a categoria</label>
+      <label 
+        v-if="tipo === 'deposito' || tipo === 'pagamento'"
+        class="text-center"
+      >
+        Selecione a categoria
+      </label>
       <v-select 
         v-if="tipo === 'deposito'"
         v-model="categoria"
@@ -101,7 +105,7 @@
         v-model="descricao"
       ></v-textarea>
 
-       <v-btn
+      <v-btn
         type="submit"
         color="primary"
       >
@@ -126,7 +130,7 @@ export default {
   },
   data() {
     return {
-      name: '', valor: null, valorTotal: 0, valorDeposito: 0, valorPagamento: 0,
+      nome: '', valor: 0, valorTotal: 0, valorDeposito: 0, valorPagamento: 0,
       tipo: '', categoria: '', selectDeposito: true, selectPagamento: false,
       dep: ["salario", "extra"], pag: ["boleto", "lazer", "educacao", "investimento"],
       transfer: [], descricao: '', saldo: false, green: true, teste: [], valorDepositoTeste: 0,
@@ -135,31 +139,30 @@ export default {
   },
   methods: {
     limpaForm() {
-      this.name = ''
-      this.valor = null
+      this.nome = ''
+      this.valor = 0
       this.descricao = ''
     },
     enviar() {
-        if(this.nome === "" || this.valor === null || this.tipo === '' || this.categoria === '') {
-          alert("Preenche o valor");
-          return;
-        } else if(this.valor > this.valorTotal && this.tipo === 'pagamento') {
-          alert("Saldo é menor que o valor informado")
-          return;
-        }
+      if(this.nome === "" || this.valor === null || this.tipo === '' || this.categoria === '') {
+        alert("Preenche o valor");
+        return;
+      } else if(this.valor > this.valorTotal && this.tipo === 'pagamento') {
+        alert("Saldo é menor que o valor informado")
+        return;
+      }
 
-        this.transfer.push({
-          name: this.name,
-          valor: parseFloat(this.valor),
-          tipo: this.tipo,
-          categoria: this.categoria,
-          descricao: this.descricao,
-          hash: Math.round(Math.random() * Date.now())
-        })
-        alert("Transferencia efetuada com sucesso")
-        this.limpaForm()
-        console.log(this.transfer)
-        this.getFromLocal()
+      this.transfer.push({
+        nome: this.nome,
+        valor: parseFloat(this.valor),
+        tipo: this.tipo,
+        categoria: this.categoria,
+        descricao: this.descricao,
+        hash: Math.round(Math.random() * Date.now())
+      })
+      this.limpaForm()
+      console.log(this.transfer)
+      this.getFromLocal()
     },
     deleteTransfer(key) {
       let yesNo = confirm("Excluir?")
@@ -194,6 +197,9 @@ export default {
       } else {
         this.green = false; this.saldo = true;
       }
+    },
+    tipo() {
+      console.log(this.tipo)
     }
   },
   created() {
@@ -206,78 +212,33 @@ export default {
 
 <style scoped>
 form {
-  max-width: 600px;
+  max-width: 800px;
 }
 
-form input {
-    margin-top: 10px;
-    width: 250px;
-    height: 30px;
+.valor {
+  font-size: 2rem;
 }
 
-.input-group {
-  display: flex;
-}
-
-.input-group-first {
-  justify-content: space-around;
-  font-size: 25px;
-}
-
-.input-group-first span, input, textarea {
-  border: 3px solid black;
-}
-
-.input-group-first span {
-  padding: 10px; color: #fff;
-}
-
-.input-group-second, .input-group-third {
-  justify-content: space-around;
-}
-
-.input-group-second {
-  flex-direction: column;
-  align-items: center;
-}
-
-.input-group-third {
-  margin: 0 auto;
-}
-
-.select {
-  height: 40px;
-  width: 170px;
-  margin: 0 auto;
-}
-
-textarea {
-  height: 70px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-
-.btn {
-  background: chocolate;
-  color: #fff;
-  width: 200px;
-  border: 0;
-  margin: 0 auto;
-  padding: 10px;
-  font-size: 20px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.btn:hover {
-  background: crimson;
-}
-
-.sald {
-  background: red;
-}
-
-.gre {
-  background: green;
+@media only screen and (max-width: 545px) {
+  .status {
+    flex-direction: column;
+  }
+  .status div {
+    margin: 2px;
+    align-items: center;
+  }
+  .card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .titulo_valor {
+    flex: 2;
+    background: chocolate;
+  }
+  .valor {
+    font-size: 1.5rem;
+    flex: 2;
+  }
 }
 </style>
