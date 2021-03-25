@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <Header/>
-    <h1>Control transfer</h1>
     
     <Form/>
   </v-app>
